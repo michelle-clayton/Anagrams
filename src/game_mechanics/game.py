@@ -9,7 +9,7 @@ class Game():
         self.anagram = ""
         self.anagram_map = {}
         self.words = set()
-        self.final = []
+        self.final = [[], []]
     
     # generate random anagram
     # eventually will make better letters => 1/4 probability for bad consonants?
@@ -32,13 +32,21 @@ class Game():
     # add word user enters
     def add_user_word(self, word: string):
         self.words.add(word)
+       # print(self.words)
 
     # check if word is legal (uses correct letters, is actually word)
     def check_word(self, word: string) -> bool:
         temp_word = word.replace(" ", "")
-        if len(temp_word) > self.level or not self.is_substring(temp_word) or not word_checker.word_check(word):
+        checker = word_checker.word_check()
+        if len(temp_word) > self.level:
+            print(word + " has length issue")
             return False
-
+        elif not self.is_substring(temp_word):
+            print(word + " is in wrong subest")
+            return False
+        elif not checker.check_word(word):
+            print(word + " is not real word")
+            return False
         return True
 
     # helper -> adds random letter in s to anagram and map
@@ -73,11 +81,11 @@ class Game():
         invalid = []
         for s in self.words:
             if self.check_word(s):
-                valid.add(s)
+                valid.append(s)
             else:
-                invalid.add(s)
-        self.final.add(valid)
-        self.final.add(invalid)
+                invalid.append(s)
+        self.final[0] = valid
+        self.final[1] = invalid
 
     # return list of valid words
     def get_valid(self):

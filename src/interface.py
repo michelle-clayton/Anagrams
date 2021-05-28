@@ -1,10 +1,11 @@
+import threading
 from tkinter import *
 from game_mechanics import game
 import timer
 
 class Window(Frame):
     welcome_message = "welcome to anagrams"
-    instructions = "enter the number of letters you'd like to unscramble (4-9) then press start"
+    instructions = "choose how many letters to unscrmable!\nYou have 10 seconds!"
     
     def __init__(self,parent=None):
         Frame.__init__(self,parent)
@@ -13,6 +14,7 @@ class Window(Frame):
         self.make_widgets()
         self.num_let = 0
         self.my_game = None
+        self.timer = None
 
     # make the buttons and place in window
     def make_widgets(self):
@@ -41,11 +43,34 @@ class Window(Frame):
     # game has started => store user entries
     def play_game(self):
         self.nametowidget(".entry").bind("<Return>", self.get_word)
+        # after 60 seconds
+        t = threading.Timer(10, self.game_over)
+        t.start()
 
-    # display 60 second timer
     def start_time(self):
-        # implement later
-        pass
+        time =2
+        self.timer = timer.my_thread("timer", time)
+        self.timer.setDaemon(True)
+        self.timer.start()
+        print(threading.active_count())
+        while not self.timer.get_time() == time:
+            continue
+        print(threading.active_count())
+
+    def game_over(self):
+        self.get_word
+        self.nametowidget(".entry").pack_forget()
+        
+        self.my_game.check_words()
+        valid = self.my_game.get_valid()
+        invalid = self.my_game.get_invalid()
+        res_str = "Num valid words: " + str(len(valid))
+        lab_str = "Valid words: " + str(valid) + "\nInvalid words: " + str(invalid)
+
+        result = Label(text = res_str, name = "score")
+        label = Label(text = lab_str, name = "game_over")
+        result.pack()
+        label.pack()
 
     # get user word after enter
     def get_word(self, event):
@@ -68,8 +93,6 @@ class Window(Frame):
         entry.pack()
 
         self.play_game()
-        self.start_time()
-    
 
 root = Tk()
 app = Window(parent=root)
