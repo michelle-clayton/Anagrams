@@ -1,18 +1,18 @@
-from tkinter import Label, Tk, Button, Frame, Entry
-import game
+from tkinter import *
+from game_mechanics import game
+import timer
 
 class Window(Frame):
     welcome_message = "welcome to anagrams"
     instructions = "enter the number of letters you'd like to unscramble (4-9) then press start"
-    num_let = 0
-    my_game = None
     
-
     def __init__(self,parent=None):
         Frame.__init__(self,parent)
         self.parent = parent
         self.pack()
         self.make_widgets()
+        self.num_let = 0
+        self.my_game = None
 
     # make the buttons and place in window
     def make_widgets(self):
@@ -40,7 +40,17 @@ class Window(Frame):
 
     # game has started => store user entries
     def play_game(self):
-        self.nametowidget(".entry").get()
+        self.nametowidget(".entry").bind("<Return>", self.get_word)
+
+    # display 60 second timer
+    def start_time(self):
+        # implement later
+        pass
+
+    # get user word after enter
+    def get_word(self, event):
+        self.my_game.add_user_word(self.nametowidget(".entry").get())
+        self.nametowidget(".entry").delete(0, END)
 
     # initialize game board 
     def start_game(self, level):
@@ -56,6 +66,9 @@ class Window(Frame):
 
         rand_let.pack()
         entry.pack()
+
+        self.play_game()
+        self.start_time()
     
 
 root = Tk()
